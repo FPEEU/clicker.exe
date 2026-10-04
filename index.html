@@ -1,0 +1,1365 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>clicker.exe</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #008080;
+    color: #000;
+    font-family: "MS Sans Serif", "System", Tahoma, sans-serif;
+    font-size: 13px;
+}
+
+.window {
+    width: min(750px, 100%);
+    margin: auto;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow: 3px 3px #000000;
+}
+
+.titlebar {
+    height: 25px;
+    background: #000080;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 2px 4px;
+    font-family: "MS Sans Serif", "System", Tahoma, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title-button {
+    width: 20px;
+    height: 19px;
+    margin-left: 3px;
+    background: #c0c0c0;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "MS Sans Serif", "System", Tahoma, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    user-select: none;
+}
+
+.title-button:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.menu-bar {
+    height: 25px;
+    background: #c0c0c0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #808080;
+}
+
+.menu-item {
+    height: 24px;
+    padding: 5px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: #000080;
+    color: white;
+}
+
+.context-menu {
+    position: absolute;
+    display: none;
+    min-width: 170px;
+    background: #c0c0c0;
+    padding: 2px;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow: 2px 2px #000;
+    z-index: 1000;
+}
+
+.context-menu.show {
+    display: block;
+}
+
+.context-item {
+    padding: 5px 25px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.context-item:hover {
+    background: #000080;
+    color: white;
+}
+
+.context-separator {
+    height: 1px;
+    margin: 3px 2px;
+    background: #808080;
+    border-bottom: 1px solid white;
+}
+
+.content {
+    padding: 12px;
+    background: #c0c0c0;
+}
+
+.panel {
+    padding: 10px;
+    margin-bottom: 12px;
+    background: #c0c0c0;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.counter {
+    background: #000000;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    padding: 12px;
+    border: 2px inset #808080;
+}
+
+.stats {
+    text-align: center;
+    margin-top: 8px;
+    font-family: "Courier New", monospace;
+}
+
+button {
+    font-family: "MS Sans Serif", "System", Tahoma, sans-serif;
+    font-size: 13px;
+    background: #c0c0c0;
+    color: #000000;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+button:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+button:disabled {
+    color: #808080;
+    cursor: not-allowed;
+    text-shadow: 1px 1px #ffffff;
+}
+
+#clickButton {
+    display: block;
+    width: 250px;
+    height: 90px;
+    margin: 15px auto;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.rounded {
+    border-radius: 20px;
+}
+
+#shopPanel {
+    display: none;
+}
+
+#shopPanel.open {
+    display: block;
+}
+
+.shop-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.shop-description {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.upgrade {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    margin: 6px 0;
+    background: #d4d0c8;
+    border: 1px solid #808080;
+}
+
+.upgrade-info {
+    flex: 1;
+}
+
+.upgrade-name {
+    font-weight: bold;
+}
+
+.upgrade-description {
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+.level {
+    margin-top: 3px;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+}
+
+.cost {
+    white-space: nowrap;
+    font-family: "Courier New", monospace;
+}
+
+.status {
+    min-height: 22px;
+    padding: 5px;
+    background: #ffffe1;
+    border: 1px solid #808080;
+    font-size: 11px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 11px;
+    color: #404040;
+}
+
+.html5-mode .content {
+    background: #f2f2f2;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+}
+
+.html5-mode .panel {
+    background: #ffffff;
+    border: 1px solid #b5b5b5;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+}
+
+.html5-mode .counter {
+    background: #eeeeee;
+    color: #222222;
+    font-family: "Courier New", monospace;
+    border: 1px solid #999999;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+    text-shadow: none;
+}
+
+.html5-mode .stats {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #444;
+}
+
+.html5-mode #clickButton {
+    background: #ffffff;
+    color: #222;
+    border: 1px solid #888888;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.html5-mode #clickButton:hover {
+    background: #eeeeee;
+}
+
+.html5-mode #clickButton:active {
+    background: #dddddd;
+    border: 1px solid #666666;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.html5-mode .upgrade {
+    background: #ffffff;
+    border: 1px solid #c0c0c0;
+    border-radius: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.html5-mode .upgrade-name {
+    font-weight: bold;
+}
+
+.html5-mode .upgrade-description {
+    color: #555;
+}
+
+.html5-mode .level {
+    font-family: "Courier New", monospace;
+    color: #555;
+}
+
+.html5-mode .cost {
+    font-family: "Courier New", monospace;
+    color: #333;
+}
+
+.html5-mode .upgrade button {
+    background: #ffffff;
+    border: 1px solid #888888;
+    border-radius: 2px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.html5-mode .upgrade button:hover:not(:disabled) {
+    background: #eeeeee;
+}
+
+.html5-mode .upgrade button:active:not(:disabled) {
+    background: #dddddd;
+}
+
+.html5-mode .status {
+    background: #ffffff;
+    border: 1px solid #bbbbbb;
+    color: #333;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.html5-mode .footer {
+    color: #555;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#cheatOverlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+#cheatOverlay.show {
+    display: flex;
+}
+
+.cheat-window {
+    width: 360px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow: 4px 4px #000000;
+}
+
+.cheat-titlebar {
+    height: 25px;
+    background: #000080;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 3px 5px;
+    font-family: "MS Sans Serif", "System", Tahoma, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.cheat-title {
+    flex: 1;
+}
+
+.cheat-content {
+    padding: 12px;
+}
+
+.cheat-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cheat-row label {
+    width: 150px;
+}
+
+.cheat-row input {
+    width: 160px;
+    height: 24px;
+    font-family: "Courier New", monospace;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    background: white;
+    padding: 3px;
+}
+
+.cheat-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 15px;
+}
+
+.cheat-info {
+    font-size: 11px;
+    color: #404040;
+    margin-bottom: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="window">
+
+    <div class="titlebar">
+        <div class="title">
+            clicker.exe
+        </div>
+
+        <div class="title-button">_</div>
+        <div class="title-button">□</div>
+        <div class="title-button">X</div>
+    </div>
+
+    <div class="menu-bar">
+
+        <div
+            class="menu-item"
+            id="fileMenuButton"
+            onclick="toggleFileMenu(this)"
+        >
+            File
+        </div>
+
+        <div
+            class="menu-item"
+            id="shopMenuButton"
+            onclick="toggleShop(this)"
+        >
+            Shop
+        </div>
+
+    </div>
+
+    <div id="fileMenu" class="context-menu">
+
+        <div
+            class="context-item"
+            onclick="saveGame(); closeMenus();"
+        >
+            Save As
+        </div>
+
+        <div
+            class="context-item"
+            onclick="loadGame(); render(); closeMenus();"
+        >
+            Import
+        </div>
+
+        <div class="context-separator"></div>
+
+        <div
+            class="context-item"
+            onclick="resetGame(); closeMenus();"
+        >
+            Delete File
+        </div>
+
+    </div>
+
+    <div class="content">
+
+        <div class="panel">
+
+            <div id="counter" class="counter">
+                0000000000
+            </div>
+
+            <div id="stats" class="stats">
+                1 klik / kliknięcie
+            </div>
+
+            <button id="clickButton">
+                click here
+            </button>
+
+            <div id="status" class="status">
+                ready sirrrrrrrrrrrr
+            </div>
+
+        </div>
+
+        <div id="shopPanel" class="panel">
+
+            <div class="shop-title">
+                shop.exe
+            </div>
+
+            <div class="shop-description">
+                UPGRADE MY SKILLS !11!11!!!
+            </div>
+
+            <hr>
+
+            <div id="upgrades"></div>
+
+        </div>
+
+        <div class="footer">
+            Music by FPE_EU and Living Tombstone.
+            <br>
+            windows 95 go brrrrrrrrr
+            <br>
+           press c to be a cheater
+        </div>
+
+    </div>
+
+</div>
+
+<div id="cheatOverlay">
+
+    <div class="cheat-window">
+
+        <div class="cheat-titlebar">
+
+            <div class="cheat-title">
+                cheatengine.exe
+            </div>
+
+            <div
+                class="title-button"
+                onclick="closeCheatMenu()"
+            >
+                X
+            </div>
+
+        </div>
+
+        <div class="cheat-content">
+
+            <div class="cheat-info">
+                Free cheats for you <3
+            </div>
+
+            <div class="cheat-row">
+
+                <label>
+                    Overwrite clicks:
+                </label>
+
+                <input
+                    id="cheatClicks"
+                    type="number"
+                    min="0"
+                    step="1"
+                >
+
+            </div>
+
+            <div class="cheat-row">
+
+                <label>
+                    Multiplier:
+                </label>
+
+                <input
+                    id="cheatMultiplier"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                >
+
+            </div>
+
+            <div class="cheat-buttons">
+
+                <button onclick="applyCheats()">
+                    Save Changes
+                </button>
+
+                <button onclick="closeCheatMenu()">
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<audio id="music" preload="auto"></audio>
+
+<script>
+let game = {
+    clicks: 0,
+    perClick: 1,
+    multiplier: 1,
+    bots: 0,
+    upgrades: {}
+};
+
+const playlist = [
+    "https://files.catbox.moe/e35uz5.wav"
+];
+
+const clickSfxUrl =
+    "https://files.catbox.moe/ttsfas.wav";
+
+let currentTrack = 0;
+
+const music =
+    document.getElementById("music");
+
+function playMusic() {
+
+    if (!playlist.length)
+        return;
+
+    music.src =
+        playlist[currentTrack];
+
+    music.play().catch(() => {
+
+        document.addEventListener(
+            "click",
+            startMusicAfterInteraction,
+            { once: true }
+        );
+
+    });
+}
+
+function startMusicAfterInteraction() {
+
+    music.play().catch(() => {});
+
+}
+
+music.addEventListener(
+    "ended",
+    function() {
+
+        currentTrack++;
+
+        if (
+            currentTrack >= playlist.length
+        ) {
+
+            currentTrack = 0;
+
+        }
+
+        playMusic();
+
+    }
+);
+
+document.addEventListener(
+    "mousedown",
+    function(event) {
+
+        if (event.button !== 0)
+            return;
+
+        const sfx =
+            new Audio(clickSfxUrl);
+
+        sfx.preload = "auto";
+        sfx.volume = 1;
+
+        sfx.playbackRate =
+            0.92 + Math.random() * 0.16;
+
+        sfx.play().catch(() => {});
+
+    }
+);
+
+const upgrades = [
+
+    {
+        id: "moreClick",
+        name: "more clicks/click",
+        description: "+1 per click (wowww).",
+        baseCost: 50,
+        multiplier: 1.55,
+        power: 1
+    },
+
+    {
+        id: "clickBot",
+        name: "Click Bot",
+        description: "+5 clicks per sec.",
+        baseCost: 50,
+        multiplier: 1.75,
+        power: 5
+    },
+
+    {
+        id: "html5",
+        name: "HTML5",
+        description: "suspiciously new technology. also gives some clicks/clicks",
+        baseCost: 5000,
+        multiplier: 2,
+        power: 10
+    },
+
+    {
+        id: "rounded",
+        name: "Rounded Buttons",
+        description: "rounds button corners. also gives +25 / click.",
+        baseCost: 10000,
+        multiplier: 2.15,
+        power: 25
+    },
+
+    {
+        id: "internet",
+        name: "Internet Explorer",
+        description: "''Slow, but works, that what matters  - some random dude''. +50 / click.",
+        baseCost: 25000,
+        multiplier: 2.25,
+        power: 50
+    },
+
+    {
+        id: "pentium",
+        name: "Pentium 200 MMX",
+        description: "super speed. +100 / click.",
+        baseCost: 75000,
+        multiplier: 2.4,
+        power: 100
+    },
+
+    {
+        id: "windows98",
+        name: "Windows 98",
+        description: "95, now 98, wheres 96?. +250 / cllick.",
+        baseCost: 250000,
+        multiplier: 2.5,
+        power: 250
+    },
+
+    {
+        id: "blueScreen",
+        name: "Blue Screen",
+        description: "your pc received  too  many clicks. +1000 / click.",
+        baseCost: 1000000,
+        multiplier: 2.75,
+        power: 1000
+    }
+
+];
+
+function toggleFileMenu(button) {
+
+    const menu =
+        document.getElementById("fileMenu");
+
+    const rect =
+        button.getBoundingClientRect();
+
+    const isOpen =
+        menu.classList.contains("show");
+
+    closeMenus();
+
+    if (!isOpen) {
+
+        menu.style.left =
+            rect.left + "px";
+
+        menu.style.top =
+            rect.bottom + "px";
+
+        menu.classList.add("show");
+
+        button.classList.add("active");
+
+    }
+
+}
+
+function toggleShop(button) {
+
+    closeMenus();
+
+    const shop =
+        document.getElementById("shopPanel");
+
+    const isOpen =
+        shop.classList.contains("open");
+
+    shop.classList.toggle(
+        "open",
+        !isOpen
+    );
+
+    button.classList.toggle(
+        "active",
+        !isOpen
+    );
+
+}
+
+function closeMenus() {
+
+    document
+        .querySelectorAll(".context-menu")
+        .forEach(menu => {
+
+            menu.classList.remove("show");
+
+        });
+
+    document
+        .querySelectorAll(".menu-item")
+        .forEach(item => {
+
+            item.classList.remove("active");
+
+        });
+
+}
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(".menu-item") &&
+            !event.target.closest(".context-menu")
+        ) {
+
+            closeMenus();
+
+        }
+
+    }
+);
+
+function formatNumber(number) {
+
+    return Math.floor(number)
+        .toLocaleString("pl-PL")
+        .replace(/\u00A0/g, " ");
+
+}
+
+function getLevel(id) {
+
+    return game.upgrades[id] || 0;
+
+}
+
+function getCost(upgrade) {
+
+    return Math.floor(
+
+        upgrade.baseCost *
+
+        Math.pow(
+            upgrade.multiplier,
+            getLevel(upgrade.id)
+        )
+
+    );
+
+}
+
+function render() {
+
+    document
+        .getElementById("counter")
+        .textContent =
+
+        formatNumber(game.clicks)
+        .padStart(10, "0");
+
+    const totalPower =
+        game.perClick *
+        game.multiplier;
+
+    document
+        .getElementById("stats")
+        .textContent =
+
+        formatNumber(totalPower) +
+        " klik / kliknięcie";
+
+    document.body.classList.toggle(
+        "html5-mode",
+        getLevel("html5") > 0
+    );
+
+    document
+        .getElementById("clickButton")
+        .classList.toggle(
+            "rounded",
+            getLevel("rounded") > 0
+        );
+
+    const container =
+        document.getElementById("upgrades");
+
+    container.innerHTML = "";
+
+    upgrades.forEach(upgrade => {
+
+        const level =
+            getLevel(upgrade.id);
+
+        const cost =
+            getCost(upgrade);
+
+        const canBuy =
+            game.clicks >= cost;
+
+        let effect;
+
+        if (
+            upgrade.id === "clickBot"
+        ) {
+
+            effect =
+                "+" +
+                formatNumber(upgrade.power) +
+                " click/s";
+
+        }
+
+        else if (
+            upgrade.id === "html5"
+        ) {
+
+            effect =
+                "+10 / click + freaking html5";
+
+        }
+
+        else {
+
+            effect =
+                "+" +
+                formatNumber(upgrade.power) +
+                " / klik";
+
+        }
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "upgrade";
+
+        row.innerHTML = `
+
+            <div class="upgrade-info">
+
+                <div class="upgrade-name">
+                    ${upgrade.name}
+                </div>
+
+                <div class="upgrade-description">
+                    ${upgrade.description}
+                </div>
+
+                <div class="level">
+                    level: ${level}
+                    |
+                    ${effect}
+                </div>
+
+            </div>
+
+            <div class="cost">
+                ${formatNumber(cost)} klików
+            </div>
+
+            <button>
+                buy
+            </button>
+
+        `;
+
+        const button =
+            row.querySelector("button");
+
+        button.disabled =
+            !canBuy;
+
+        button.onclick =
+            function() {
+
+                buyUpgrade(upgrade.id);
+
+            };
+
+        container.appendChild(row);
+
+    });
+
+}
+
+function clickGame() {
+
+    game.clicks +=
+        game.perClick *
+        game.multiplier;
+
+    render();
+
+}
+
+document
+    .getElementById("clickButton")
+    .addEventListener(
+        "click",
+        clickGame
+    );
+
+function buyUpgrade(id) {
+
+    const upgrade =
+        upgrades.find(
+            x => x.id === id
+        );
+
+    const cost =
+        getCost(upgrade);
+
+    if (
+        game.clicks < cost
+    )
+        return;
+
+    game.clicks -= cost;
+
+    game.upgrades[id] =
+        getLevel(id) + 1;
+
+    if (
+        id === "clickBot"
+    ) {
+
+        game.bots++;
+
+    }
+
+    else {
+
+        game.perClick +=
+            upgrade.power;
+
+    }
+
+    document
+        .getElementById("status")
+        .textContent =
+
+        "bought: " +
+        upgrade.name +
+        " | level " +
+        getLevel(id);
+
+    saveGame();
+
+    render();
+
+}
+
+setInterval(
+    function() {
+
+        if (
+            game.bots > 0
+        ) {
+
+            game.clicks +=
+                game.bots * 5;
+
+            render();
+
+        }
+
+    },
+    1000
+);
+
+function openCheatMenu() {
+
+    document
+        .getElementById("cheatClicks")
+        .value =
+        game.clicks;
+
+    document
+        .getElementById("cheatMultiplier")
+        .value =
+        game.multiplier;
+
+    document
+        .getElementById("cheatOverlay")
+        .classList.add("show");
+
+    document
+        .getElementById("cheatClicks")
+        .focus();
+
+}
+
+function closeCheatMenu() {
+
+    document
+        .getElementById("cheatOverlay")
+        .classList.remove("show");
+
+}
+
+function applyCheats() {
+
+    const clicks =
+        Number(
+            document
+                .getElementById("cheatClicks")
+                .value
+        );
+
+    const multiplier =
+        Number(
+            document
+                .getElementById("cheatMultiplier")
+                .value
+        );
+
+    if (
+        !Number.isFinite(clicks) ||
+        clicks < 0
+    ) {
+
+        alert(
+            "get some clicks, loser."
+        );
+
+        return;
+
+    }
+
+    if (
+        !Number.isFinite(multiplier) ||
+        multiplier < 0
+    ) {
+
+        alert(
+            "wrong multiplier!1!!!1"
+        );
+
+        return;
+
+    }
+
+    game.clicks =
+        clicks;
+
+    game.multiplier =
+        multiplier;
+
+    document
+        .getElementById("status")
+        .textContent =
+        "CHEAT.EXE: wartości zmienione.";
+
+    saveGame();
+
+    render();
+
+    closeCheatMenu();
+
+}
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key.toLowerCase() !== "c"
+        )
+            return;
+
+        if (
+            event.target.tagName === "INPUT" ||
+            event.target.tagName === "TEXTAREA"
+        )
+            return;
+
+        const overlay =
+            document.getElementById(
+                "cheatOverlay"
+            );
+
+        if (
+            overlay.classList.contains("show")
+        ) {
+
+            closeCheatMenu();
+
+        }
+
+        else {
+
+            openCheatMenu();
+
+        }
+
+    }
+);
+
+function saveGame() {
+
+    localStorage.setItem(
+        "win95ClickerSave",
+        JSON.stringify(game)
+    );
+
+}
+
+function loadGame() {
+
+    const saved =
+        localStorage.getItem(
+            "win95ClickerSave"
+        );
+
+    if (!saved)
+        return;
+
+    try {
+
+        game =
+            JSON.parse(saved);
+
+        game.upgrades ||= {};
+
+        game.bots ||= 0;
+
+        game.perClick ||= 1;
+
+        game.multiplier ||= 1;
+
+    }
+
+    catch {
+
+        console.log(
+            "Save file is corrupted."
+        );
+
+    }
+
+}
+
+function resetGame() {
+
+    if (
+        !confirm(
+            "do you want to clear your saves?"
+        )
+    )
+        return;
+
+    localStorage.removeItem(
+        "win95ClickerSave"
+    );
+
+    game = {
+
+        clicks: 0,
+
+        perClick: 1,
+
+        multiplier: 1,
+
+        bots: 0,
+
+        upgrades: {}
+
+    };
+
+    document.body.classList.remove(
+        "html5-mode"
+    );
+
+    document
+        .getElementById("status")
+        .textContent =
+        "what a NOOB. i have now ALL of your LEVEL!!! haha. YOUR. POWER. IS. MINE.";
+
+    render();
+
+}
+
+setInterval(
+    saveGame,
+    10000
+);
+
+loadGame();
+
+render();
+
+playMusic();
+</script>
+
+</body>
+</html>
+
